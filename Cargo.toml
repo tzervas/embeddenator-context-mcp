@@ -1,0 +1,72 @@
+[package]
+name = "embeddenator-context-mcp"
+version = "0.1.0-alpha.1"
+edition = "2021"
+authors = ["Tyler Zervas <tzervas>"]
+license = "MIT"
+description = "MCP server for context management, RAG processing, and temporal reasoning - inspired by memory-gate patterns"
+repository = "https://github.com/tzervas/embeddenator-context-mcp"
+keywords = ["mcp", "rag", "context", "memory", "temporal"]
+categories = ["development-tools", "memory-management"]
+
+[dependencies]
+# MCP and async runtime
+tokio = { version = "1.0", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# HTTP/WebSocket for MCP
+axum = { version = "0.7", features = ["ws"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# Storage backends
+# In-memory with LRU
+lru = "0.12"
+# Disk persistence
+sled = "0.34"
+# Optional: vector similarity (can use embeddenator core)
+# embeddenator = { path = "../embeddenator", optional = true }
+
+# Hashing and IDs
+sha2 = "0.10"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+base64 = "0.22"
+
+# Time and temporal reasoning
+chrono = { version = "0.4", features = ["serde"] }
+humantime = "2.1"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# CPU optimization
+rayon = "1.10"
+
+# CLI
+clap = { version = "4.5", features = ["derive"] }
+
+# Random
+rand = "0.8"
+
+# Optional: SIMD for vector operations
+# packed_simd = { version = "0.3", optional = true }
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3.0"
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+[features]
+default = []
+simd = []
+embeddings = []
