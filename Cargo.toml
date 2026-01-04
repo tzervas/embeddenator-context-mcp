@@ -26,7 +26,7 @@ tower-http = { version = "0.5", features = ["cors", "trace"] }
 
 # Storage backends
 # In-memory with LRU
-lru = "0.12"
+lru = "0.16"
 # Disk persistence
 sled = "0.34"
 # Optional: vector similarity (can use embeddenator core)
