@@ -1,4 +1,4 @@
-//! # Embeddenator Context MCP Server
+//! # Context MCP Server
 //!
 //! A Model Context Protocol (MCP) server for context management, RAG processing,
 //! and temporal reasoning. Inspired by memory-gate patterns for dynamic learning layers.

@@ -1,7 +1,7 @@
 //! Integration tests for storage index cleanup and consistency
 
-use embeddenator_context_mcp::{Context, ContextId, ContextStore, StorageConfig};
-use embeddenator_context_mcp::context::{ContextDomain, ContextQuery};
+use context_mcp::{Context, ContextId, ContextStore, StorageConfig};
+use context_mcp::context::{ContextDomain, ContextQuery};
 
 #[tokio::test]
 async fn test_delete_cleans_domain_index() {

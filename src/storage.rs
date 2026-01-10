@@ -280,10 +280,10 @@ impl ContextStore {
         domain_filter: Option<&ContextDomain>,
     ) -> Result<Vec<Context>> {
         // Build query
-        let mut ctx_query = ContextQuery::new().with_limit(limit);
+        let _ctx_query = ContextQuery::new().with_limit(limit);
 
-        if let Some(domain) = domain_filter {
-            ctx_query = ctx_query.with_domain(domain.clone());
+        if let Some(_domain) = domain_filter {
+            // ctx_query = ctx_query.with_domain(domain.clone());
         }
 
         // For now, simple text matching

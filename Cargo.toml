@@ -1,11 +1,11 @@
 [package]
-name = "embeddenator-context-mcp"
+name = "context-mcp"
 version = "0.1.0-alpha.1"
 edition = "2021"
 authors = ["Tyler Zervas <tzervas>"]
 license = "MIT"
 description = "MCP server for context management, RAG processing, and temporal reasoning - inspired by memory-gate patterns"
-repository = "https://github.com/tzervas/embeddenator-context-mcp"
+repository = "https://github.com/tzervas/context-mcp"
 keywords = ["mcp", "rag", "context", "memory", "temporal"]
 categories = ["development-tools", "memory-management"]
 

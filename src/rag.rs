@@ -402,17 +402,17 @@ mod tests {
         assert!(query.tags.contains(&"rust".to_string()));
     }
 
-    #[test]
-    fn test_rag_processor() {
+    #[tokio::test]
+    async fn test_rag_processor() {
         let (store, _temp) = create_test_store();
         let processor = RagProcessor::with_defaults(store.clone());
 
         // Add test context
         let ctx = Context::new("Test content", ContextDomain::Code);
-        store.store(ctx).unwrap();
+        store.store(ctx).await.unwrap();
 
         // Retrieve
-        let result = processor.retrieve(&RetrievalQuery::new()).unwrap();
+        let result = processor.retrieve(&RetrievalQuery::new()).await.unwrap();
         assert_eq!(result.candidates_considered, 1);
     }
 }

@@ -190,7 +190,6 @@ impl TemporalStats {
             };
         }
 
-        let now = Utc::now();
         let mut oldest: Option<DateTime<Utc>> = None;
         let mut newest: Option<DateTime<Utc>> = None;
         let mut total_age_hours = 0.0;

@@ -1,4 +1,4 @@
-//! embeddenator-context-mcp
+//! context-mcp
 //!
 //! MCP server for context management with temporal reasoning and RAG support.
 //!
@@ -13,18 +13,18 @@
 //!
 //! Run as HTTP server:
 //! ```bash
-//! embeddenator-context-mcp --host 127.0.0.1 --port 3000
+//! context-mcp --host 127.0.0.1 --port 3000
 //! ```
 //!
 //! Run as stdio transport:
 //! ```bash
-//! embeddenator-context-mcp --stdio
+//! context-mcp --stdio
 //! ```
 
 use clap::Parser;
 use std::path::PathBuf;
 
-use embeddenator_context_mcp::{
+use context_mcp::{
     rag::RagConfig,
     server::{McpServer, ServerConfig, StdioTransport},
     storage::StorageConfig,
@@ -32,7 +32,7 @@ use embeddenator_context_mcp::{
 
 /// MCP Context Management Server
 #[derive(Parser, Debug)]
-#[command(name = "embeddenator-context-mcp")]
+#[command(name = "context-mcp")]
 #[command(about = "Context management MCP server with temporal reasoning")]
 #[command(version)]
 struct Args {

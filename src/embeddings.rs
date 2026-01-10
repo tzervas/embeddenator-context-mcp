@@ -3,7 +3,7 @@
 //! This module provides trait definitions for embedding generation that will
 //! be replaced with real implementations (candle, embeddenator-vsa) in future PRs.
 
-use crate::error::{ContextError, Result};
+use crate::error::Result;
 use async_trait::async_trait;
 
 /// Trait for generating embeddings from text

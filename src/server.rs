@@ -48,6 +48,7 @@ impl Default for ServerConfig {
 }
 
 /// Shared server state
+#[allow(dead_code)]
 pub struct ServerState {
     store: Arc<ContextStore>,
     rag: Arc<RagProcessor>,
@@ -119,7 +120,7 @@ impl McpServer {
 async fn health() -> impl IntoResponse {
     Json(json!({
         "status": "ok",
-        "server": "embeddenator-context-mcp",
+        "server": "context-mcp",
         "version": env!("CARGO_PKG_VERSION")
     }))
 }
@@ -158,7 +159,7 @@ fn handle_initialize(id: RequestId) -> JsonRpcResponse {
             prompts: None,
         },
         server_info: ServerInfo {
-            name: "embeddenator-context-mcp".to_string(),
+            name: "context-mcp".to_string(),
             version: env!("CARGO_PKG_VERSION").to_string(),
         },
     };
@@ -260,7 +261,7 @@ impl StdioTransport {
                             stdout.write_all(b"\n").await.ok();
                             stdout.flush().await.ok();
                         }
-                        Err(e) => {
+                        Err(_e) => {
                             let error = JsonRpcResponse::error(
                                 RequestId::Number(0),
                                 JsonRpcError::parse_error(),
