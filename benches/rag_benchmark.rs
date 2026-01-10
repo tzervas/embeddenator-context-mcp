@@ -3,7 +3,8 @@ use context_mcp::{
     rag::{RagProcessor, RetrievalQuery},
     Context, ContextStore, StorageConfig,
 };
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
+use std::hint::black_box;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
 

@@ -4,12 +4,15 @@ set -e
 echo "Running pre-commit checks..."
 
 # Check if just is available
-if ! command -v just &> /dev/null; then
+if ! command -v just &> /dev/null && ! [ -x "$HOME/.cargo/bin/just" ]; then
     echo "just not found. Install with: cargo install just"
     exit 1
 fi
 
+# Use just from PATH or cargo bin
+JUST_CMD=$(command -v just || echo "$HOME/.cargo/bin/just")
+
 # Run pre-commit checks
-just pre-commit
+"$JUST_CMD" pre-commit
 
 echo "All pre-commit checks passed!"
