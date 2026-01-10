@@ -1,13 +1,13 @@
 [package]
 name = "context-mcp"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 rust-version = "1.75"
 authors = ["Tyler Zervas <tzervas>"]
 license = "MIT"
 description = "MCP server for context storage, text-based retrieval, and temporal tracking with optional persistence"
 repository = "https://github.com/tzervas/context-mcp"
-documentation = "https://docs.rs/context-mcp"
+documentation = "https://docs.rs/context-mcp/latest/context_mcp/"
 keywords = ["mcp", "rag", "context", "memory", "temporal"]
 categories = ["development-tools", "memory-management"]
 

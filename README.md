@@ -1,7 +1,7 @@
 # context-mcp
 
 [![Crates.io](https://img.shields.io/crates/v/context-mcp.svg)](https://crates.io/crates/context-mcp)
-[![Documentation](https://docs.rs/context-mcp/badge.svg)](https://docs.rs/context-mcp)
+[![Documentation](https://docs.rs/context-mcp/badge.svg)](https://docs.rs/context-mcp/latest/context_mcp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 MCP server for context management, temporal metadata, and lightweight retrieval plumbing.
