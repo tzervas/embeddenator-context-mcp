@@ -288,7 +288,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_health_endpoint() {
-        let response = health().await;
+        let _response = health().await;
         // Basic test that it responds
     }
 
