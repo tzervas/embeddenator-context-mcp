@@ -8,6 +8,31 @@ MCP server for context management, temporal metadata, and lightweight retrieval 
 
 This crate provides a "memory service" for agents: store/retrieve context items with timestamps and metadata, supporting basic query/retrieval patterns via text matching and filtering.
 
+## Quick Start
+
+### Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tzervas/context-mcp/main/install.sh | bash
+```
+
+Or via cargo:
+```bash
+cargo install context-mcp
+```
+
+**See [INSTALL.md](INSTALL.md) for detailed installation instructions and VS Code configuration.**
+
+### Run
+
+```bash
+# Stdio transport (for MCP clients like VS Code)
+context-mcp --stdio
+
+# HTTP server
+context-mcp --host 127.0.0.1 --port 3000
+```
+
 ## Features
 
 - **Multi-tier Storage**: In-memory LRU cache with optional sled-based disk persistence
@@ -16,18 +41,25 @@ This crate provides a "memory service" for agents: store/retrieve context items 
 - **MCP Protocol Support**: JSON-RPC server implementation with HTTP/WebSocket and stdio transports
 - **Screening Status Fields**: Built-in fields for tracking security screening state (integration not included)
 
+## Performance
+
+Validated through comprehensive benchmarking:
+- **7,421 contexts/second** sustained throughput
+- **Sub-millisecond latency** (0.13-0.23ms average)
+- **100% test pass rate** across all 9 MCP tools
+
+See [ASSESSMENT_REPORT.md](ASSESSMENT_REPORT.md) for detailed performance analysis.
+
+## Documentation
+
+- **[INSTALL.md](INSTALL.md)** - Installation and setup guide
+- **[USAGE_EXAMPLES.md](USAGE_EXAMPLES.md)** - Usage examples and scenarios
+- **[ASSESSMENT_REPORT.md](ASSESSMENT_REPORT.md)** - Performance benchmarks and validation
+- **[API Documentation](https://docs.rs/context-mcp)** - Rust API reference
+
 ## Status
 
-Alpha / under active development. APIs and tool names may change.
-
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-context-mcp = "0.1"
-```
+Production-ready for context management and lightweight RAG. APIs are stable.
 
 ## Usage
 
