@@ -2,7 +2,7 @@
 **Real-World Kubernetes & Helm Data Performance Analysis**
 
 **Report Date:** January 10, 2026  
-**Test Environment:** Linux, context-mcp v0.1.6  
+**Test Environment:** Linux, context-mcp v0.2.0  
 **Dataset:** Real Kubernetes releases + 5 popular Helm charts with 15 versions  
 
 ---

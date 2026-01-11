@@ -1,6 +1,6 @@
 [package]
 name = "context-mcp"
-version = "0.1.6"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.75"
 authors = ["Tyler Zervas <tzervas>"]
@@ -17,71 +17,89 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 # MCP and async runtime
-tokio = { version = "1.0", features = ["full"] }
-async-trait = "0.1"
-futures = "0.3"
+tokio = { version = "=1.49.0", features = ["full"] }
+async-trait = "=0.1.89"
+futures = "=0.3.31"
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.149"
 
 # HTTP/WebSocket for MCP
-axum = { version = "0.8", features = ["ws"], optional = true }
-tower = { version = "0.5", optional = true }
-tower-http = { version = "0.6", features = ["cors", "trace"], optional = true }
+axum = { version = "=0.8.8", features = ["ws"], optional = true }
+tower = { version = "=0.5.2", optional = true }
+tower-http = { version = "=0.6.8", features = ["cors", "trace"], optional = true }
 
 # Storage backends
 # In-memory with LRU
-lru = "0.16"
+lru = "=0.12.5"
 # Disk persistence
-sled = { version = "0.34", optional = true }
+sled = { version = "=0.34.7", optional = true }
 # Optional: vector similarity (can use embeddenator core)
 # embeddenator = { path = "../embeddenator", optional = true }
 
 # Hashing and IDs
-sha2 = "0.10"
-uuid = { version = "1.0", features = ["v4", "serde"] }
-base64 = "0.22"
+sha2 = "=0.10.9"
+uuid = { version = "=1.19.0", features = ["v4", "serde"] }
+base64 = "=0.22.1"
 
 # Time and temporal reasoning
-chrono = { version = "0.4", features = ["serde"] }
-humantime = "2.1"
+chrono = { version = "=0.4.42", features = ["serde"] }
+humantime = "=2.3.0"
 
 # Logging and tracing
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing = "=0.1.44"
+tracing-subscriber = { version = "=0.3.22", features = ["env-filter", "json"] }
 
 # Error handling
-thiserror = "2.0"
-anyhow = "1.0"
+thiserror = "=2.0.17"
+anyhow = "=1.0.100"
 
 # CPU optimization
-rayon = "1.10"
+rayon = "=1.11.0"
 
 # CLI
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "=4.5.54", features = ["derive"] }
 
 # Random
-rand = "0.9"
+rand = "=0.9.2"
 
-# Optional: SIMD for vector operations
-# packed_simd = { version = "0.3", optional = true }
+# Embeddings and quantization
+# Dense embeddings for baseline comparison
+ndarray = "=0.17.2"
+
+# GPU acceleration (optional)
+wgpu = { version = "=0.20.1", optional = true }
+bytemuck = { version = "=1.24.0", optional = true }
+
+# Sparse vector support
+sprs = "=0.11.4"
 
 [dev-dependencies]
-tokio-test = "0.4"
-tempfile = "3.0"
-criterion = { version = "0.8", features = ["async_tokio"] }
+tokio-test = "=0.4.5"
+tempfile = "=3.24.0"
+criterion = { version = "=0.8.1", features = ["async_tokio"] }
 
 # Development tools
-cargo-audit = "0.22"
-cargo-deny = "0.19"
+cargo-audit = "=0.22.0"
+# cargo-deny = "0.19"
 
 [features]
-default = ["server", "persistence"]
+default = ["server", "persistence", "ternary-embeddings"]
 server = ["dep:axum", "dep:tower", "dep:tower-http"]
 persistence = ["dep:sled"]
 simd = []
 embeddings = []
+# Ternary embeddings with various quantization options
+ternary-embeddings = []
+# Codebook-free sparsity approach (direct ternary quantization with top-k)
+ternary-sparse = ["ternary-embeddings"]
+# Small RVQ codebook approach (residual quantization with small codebooks)
+ternary-rvq = ["ternary-embeddings"]
+# Optional GPU acceleration with wgpu
+gpu-acceleration = ["dep:wgpu", "dep:bytemuck", "ternary-embeddings"]
+# Combined: all embedding methods
+all-embeddings = ["ternary-sparse", "ternary-rvq", "gpu-acceleration"]
 
 [[bin]]
 name = "context-mcp"

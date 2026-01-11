@@ -26,12 +26,15 @@
 pub mod context;
 pub mod embeddings;
 pub mod error;
+#[cfg(feature = "gpu-acceleration")]
+pub mod gpu;
 pub mod protocol;
 pub mod rag;
 #[cfg(feature = "server")]
 pub mod server;
 pub mod storage;
 pub mod temporal;
+pub mod ternary;
 pub mod tools;
 
 pub use context::{Context, ContextId, ContextMetadata};
