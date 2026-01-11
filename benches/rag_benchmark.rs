@@ -1,7 +1,8 @@
 use context_mcp::{
     context::ContextDomain,
     embeddings::{
-        MockEmbeddingGenerator, QuantizedEmbeddingGenerator, TernaryEmbeddingGeneratorWrapper,
+        EmbeddingGenerator, MockEmbeddingGenerator, QuantizedEmbeddingGenerator,
+        TernaryEmbeddingGeneratorWrapper,
     },
     rag::{RagProcessor, RetrievalQuery},
     ternary::{SparsityConfig, TernarySimilarity},
@@ -259,7 +260,7 @@ fn reconstruction_fidelity_benchmarks(c: &mut Criterion) {
                 b.to_async(&rt).iter(|| async {
                     let base_gen = Arc::new(MockEmbeddingGenerator::new(384));
 
-                    let gen: Arc<dyn QuantizedEmbeddingGenerator> = match *strat {
+                    let gen: Arc<dyn QuantizedEmbeddingGenerator> = match strat {
                         "sparse" => Arc::new(TernaryEmbeddingGeneratorWrapper::with_sparse(
                             base_gen,
                             SparsityConfig::default(),
