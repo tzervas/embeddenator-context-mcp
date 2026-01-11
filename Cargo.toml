@@ -1,6 +1,6 @@
 [package]
 name = "context-mcp"
-version = "0.1.6"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.75"
 authors = ["Tyler Zervas <tzervas>"]
@@ -64,8 +64,16 @@ clap = { version = "4.5", features = ["derive"] }
 # Random
 rand = "0.9"
 
-# Optional: SIMD for vector operations
-# packed_simd = { version = "0.3", optional = true }
+# Embeddings and quantization
+# Dense embeddings for baseline comparison
+ndarray = "0.16"
+
+# GPU acceleration (optional)
+wgpu = { version = "0.20", optional = true }
+bytemuck = { version = "1.14", optional = true }
+
+# Sparse vector support
+sprs = "0.11"
 
 [dev-dependencies]
 tokio-test = "0.4"
@@ -77,11 +85,21 @@ cargo-audit = "0.22"
 cargo-deny = "0.18"
 
 [features]
-default = ["server", "persistence"]
+default = ["server", "persistence", "ternary-embeddings"]
 server = ["dep:axum", "dep:tower", "dep:tower-http"]
 persistence = ["dep:sled"]
 simd = []
 embeddings = []
+# Ternary embeddings with various quantization options
+ternary-embeddings = []
+# Codebook-free sparsity approach (direct ternary quantization with top-k)
+ternary-sparse = ["ternary-embeddings"]
+# Small RVQ codebook approach (residual quantization with small codebooks)
+ternary-rvq = ["ternary-embeddings"]
+# Optional GPU acceleration with wgpu
+gpu-acceleration = ["dep:wgpu", "dep:bytemuck", "ternary-embeddings"]
+# Combined: all embedding methods
+all-embeddings = ["ternary-sparse", "ternary-rvq", "gpu-acceleration"]
 
 [[bin]]
 name = "context-mcp"

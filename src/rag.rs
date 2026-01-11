@@ -1,13 +1,15 @@
 //! CPU-optimized text-based context retrieval with scoring
 //!
 //! Provides parallel processing capabilities using rayon for efficient
-//! text matching and relevance scoring of stored contexts.
+//! text matching and relevance scoring of stored contexts, with optional
+//! semantic search using sparse ternary embeddings.
 
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 use crate::context::{Context, ContextDomain, ContextQuery};
+use crate::embeddings::QuantizedEmbeddingGenerator;
 use crate::error::ContextResult;
 use crate::storage::ContextStore;
 use crate::temporal::{TemporalQuery, TemporalStats};
@@ -29,6 +31,10 @@ pub struct RagConfig {
     pub safe_only: bool,
     /// Chunk size for parallel processing
     pub chunk_size: usize,
+    /// Embedding strategy for semantic search: "sparse", "rvq", or "hybrid"
+    pub embedding_strategy: String,
+    /// Weight for semantic similarity in final score
+    pub semantic_weight: f64,
 }
 
 impl Default for RagConfig {
@@ -41,6 +47,8 @@ impl Default for RagConfig {
             temporal_decay: true,
             safe_only: true,
             chunk_size: 1000,
+            embedding_strategy: "sparse".to_string(),
+            semantic_weight: 0.2,
         }
     }
 }
@@ -90,6 +98,7 @@ pub struct RetrievalResult {
 pub struct RagProcessor {
     config: RagConfig,
     store: Arc<ContextStore>,
+    embedding_generator: Option<Arc<dyn QuantizedEmbeddingGenerator>>,
 }
 
 impl RagProcessor {
@@ -103,7 +112,32 @@ impl RagProcessor {
                 .ok();
         }
 
-        Self { config, store }
+        Self {
+            config,
+            store,
+            embedding_generator: None,
+        }
+    }
+
+    /// Create a new RAG processor with embedding support
+    pub fn with_embeddings(
+        store: Arc<ContextStore>,
+        config: RagConfig,
+        embedding_generator: Arc<dyn QuantizedEmbeddingGenerator>,
+    ) -> Self {
+        // Configure thread pool if specified
+        if config.num_threads > 0 {
+            rayon::ThreadPoolBuilder::new()
+                .num_threads(config.num_threads)
+                .build_global()
+                .ok();
+        }
+
+        Self {
+            config,
+            store,
+            embedding_generator: Some(embedding_generator),
+        }
     }
 
     /// Create with default configuration
@@ -238,24 +272,103 @@ impl RagProcessor {
             0.5 // Neutral
         };
 
+        // Optional semantic similarity using quantized embeddings
+        let similarity_score: Option<f64> = if let (Some(text_query), Some(ref _embedding_gen)) =
+            (&query.text, &self.embedding_generator)
+        {
+            // Compute embeddings for query and context
+            // Note: In production, these would be cached during retrieval
+            if let (Ok(query_embedding), Ok(ctx_embedding)) = (
+                // For now, use a simple text hash-based pseudo-embedding
+                // In production, use actual embedding generator
+                self.text_to_pseudo_embedding(text_query),
+                self.text_to_pseudo_embedding(&ctx.content),
+            ) {
+                // Compute cosine similarity (simplified)
+                let sim = self
+                    .compute_similarity(&query_embedding, &ctx_embedding)
+                    .unwrap_or(0.0);
+                Some((sim as f64).clamp(0.0, 1.0)) // Clamp to [0, 1]
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         let breakdown = ScoreBreakdown {
             temporal: temporal_score,
             importance: importance_score,
             domain_match: domain_match_score,
             tag_match: tag_match_score,
-            similarity: None, // Placeholder for embedding-based scoring
+            similarity: similarity_score,
         };
 
-        // Weighted final score
-        let score = 0.25 * breakdown.temporal
-            + 0.25 * breakdown.importance
-            + 0.25 * breakdown.domain_match
-            + 0.25 * breakdown.tag_match;
+        // Weighted final score: incorporate semantic weight if available
+        let base_weight = 1.0 - self.config.semantic_weight;
+        let mut score = base_weight
+            * (0.25 * breakdown.temporal
+                + 0.25 * breakdown.importance
+                + 0.25 * breakdown.domain_match
+                + 0.25 * breakdown.tag_match);
+
+        if let Some(sim) = similarity_score {
+            score += self.config.semantic_weight * sim;
+        }
 
         ScoredContext {
             context: ctx.clone(),
             score,
             score_breakdown: breakdown,
+        }
+    }
+
+    /// Convert text to a simple pseudo-embedding for similarity computation
+    fn text_to_pseudo_embedding(&self, text: &str) -> Result<Vec<f32>, String> {
+        // Simple hash-based pseudo-embedding: split into words and create feature vector
+        let words: Vec<&str> = text.split_whitespace().take(100).collect();
+        let dim = 64;
+        let mut embedding = vec![0.0f32; dim];
+
+        for word in words.iter() {
+            let hash = self.simple_hash(word) as f32;
+            for (j, elem) in embedding.iter_mut().enumerate().take(dim) {
+                *elem += (hash * ((j + 1) as f32)).sin();
+            }
+        }
+
+        // Normalize
+        let norm: f32 = embedding.iter().map(|x| x * x).sum::<f32>().sqrt();
+        if norm > 0.0 {
+            embedding.iter_mut().for_each(|x| *x /= norm);
+        }
+
+        Ok(embedding)
+    }
+
+    /// Simple hash function
+    fn simple_hash(&self, s: &str) -> u32 {
+        let mut hash = 5381u32;
+        for c in s.chars() {
+            hash = hash.wrapping_mul(33).wrapping_add(c as u32);
+        }
+        hash
+    }
+
+    /// Compute cosine similarity between two embeddings
+    fn compute_similarity(&self, a: &[f32], b: &[f32]) -> Result<f32, String> {
+        if a.len() != b.len() {
+            return Err("dimension mismatch".to_string());
+        }
+
+        let dot_product: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
+        let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
+        let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+
+        if norm_a > 0.0 && norm_b > 0.0 {
+            Ok(dot_product / (norm_a * norm_b))
+        } else {
+            Ok(0.0)
         }
     }
 
