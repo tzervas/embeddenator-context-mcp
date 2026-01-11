@@ -163,8 +163,8 @@ impl GpuCompute {
             if let Some(ref gpu) = self.gpu {
                 match gpu.cosine_similarity_batch(query, candidates) {
                     Ok(result) => return Ok(result),
-                    Err(_) => {
-                        // Fall back to CPU
+                    Err(e) => {
+                        eprintln!("Warning: GPU acceleration failed ({}), falling back to CPU.", e);
                     }
                 }
             }

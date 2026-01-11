@@ -544,7 +544,13 @@ impl TernaryQuantizedEmbedding {
             size += sparse.size_bytes();
         }
         if let Some(ref rvq) = self.rvq {
-            size += rvq.num_layers * rvq.codebook_size * 4; // Approximate
+            // Each RVQ codebook entry is a dimension-length f32 vector
+            if let Some(first_layer) = rvq.codebooks.first() {
+                if let Some(first_entry) = first_layer.first() {
+                    let dimension = first_entry.len();
+                    size += rvq.num_layers * rvq.codebook_size * dimension * 4;
+                }
+            }
         }
         size
     }

@@ -324,6 +324,10 @@ impl RagProcessor {
 
     /// Convert text to a simple pseudo-embedding for similarity computation
     fn text_to_pseudo_embedding(&self, text: &str) -> Result<Vec<f32>, String> {
+        // Warning: This is a placeholder pseudo-embedding for demonstration only.
+        // In production, use actual embedding models for meaningful semantic similarity.
+        eprintln!("Warning: Using pseudo-embeddings for similarity computation. This is for demonstration only and does not provide real semantic meaning. Use actual embedding models in production.");
+
         // Simple hash-based pseudo-embedding: split into words and create feature vector
         let words: Vec<&str> = text.split_whitespace().take(100).collect();
         let dim = 64;

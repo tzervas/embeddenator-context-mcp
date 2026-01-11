@@ -115,7 +115,7 @@ Hybrid: 10 non-zeros, 80% storage reduction, MSE 0.312
   ndarray = "0.16"
   sprs = "0.11"
   wgpu = { version = "0.20", optional = true }
-  bytemuck = { version = "1.24", features = ["derive"], optional = true }
+  bytemuck = { version = "1.14", features = ["derive"], optional = true }
   ```
 
 - **Added Feature Flags**:
