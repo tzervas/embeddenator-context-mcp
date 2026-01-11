@@ -66,7 +66,7 @@ rand = "0.9"
 
 # Embeddings and quantization
 # Dense embeddings for baseline comparison
-ndarray = "0.16"
+ndarray = "0.17"
 
 # GPU acceleration (optional)
 wgpu = { version = "0.20", optional = true }
@@ -82,7 +82,7 @@ criterion = { version = "0.8", features = ["async_tokio"] }
 
 # Development tools
 cargo-audit = "0.22"
-cargo-deny = "0.19"
+# cargo-deny = "0.19"
 
 [features]
 default = ["server", "persistence", "ternary-embeddings"]

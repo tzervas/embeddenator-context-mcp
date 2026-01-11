@@ -164,7 +164,10 @@ impl GpuCompute {
                 match gpu.cosine_similarity_batch(query, candidates) {
                     Ok(result) => return Ok(result),
                     Err(e) => {
-                        eprintln!("Warning: GPU acceleration failed ({}), falling back to CPU.", e);
+                        eprintln!(
+                            "Warning: GPU acceleration failed ({}), falling back to CPU.",
+                            e
+                        );
                     }
                 }
             }
